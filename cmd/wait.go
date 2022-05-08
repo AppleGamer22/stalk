@@ -11,6 +11,7 @@ import (
 )
 
 var waitCommand = &cobra.Command{
+	Use:   "wait",
 	Short: "wait a file for change",
 	Long:  "wait a file for change",
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -37,7 +38,11 @@ var waitCommand = &cobra.Command{
 			for {
 				select {
 				case event := <-watcher.Events:
+					if event.Name == "" {
+						continue
+					}
 					log.Println(event)
+					return
 				case err := <-watcher.Errors:
 					if err != nil {
 						errs <- err
@@ -51,6 +56,7 @@ var waitCommand = &cobra.Command{
 			if watcher.Add(path); err != nil {
 				return err
 			}
+			log.Println("watching", path)
 		}
 
 		signals := make(chan os.Signal, 1)

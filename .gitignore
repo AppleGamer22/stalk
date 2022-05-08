@@ -1,0 +1,12 @@
+*.csv
+*.exe
+stalk
+stalk.bash
+stalk.fish
+stalk.zsh
+stalk.ps1
+bin
+vendor
+.vagrant
+**/.DS_Store
+dist/
