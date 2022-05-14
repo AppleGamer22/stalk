@@ -11,7 +11,3 @@ var RootCommand = &cobra.Command{
 	Long:    "watch/wait a file for change",
 	Version: Version,
 }
-
-func init() {
-	RootCommand.AddCommand(waitCommand)
-}

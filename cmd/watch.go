@@ -10,10 +10,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var waitCommand = &cobra.Command{
-	Use:   "wait",
-	Short: "wait a file for change",
-	Long:  "wait a file for change",
+var watchCommand = &cobra.Command{
+	Use:   "watch",
+	Short: "watch a file for change",
+	Long:  "watch a file for change",
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) > 0 {
 			for _, path := range args {
@@ -26,7 +26,6 @@ var waitCommand = &cobra.Command{
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		log.SetOutput(os.Stdout)
 		watcher, err := fsnotify.NewWatcher()
 		if err != nil {
 			return err
@@ -42,12 +41,13 @@ var waitCommand = &cobra.Command{
 					if event.Name == "" {
 						continue
 					}
+					log.SetOutput(os.Stdout)
 					log.Println(event)
 					return
 				case err := <-watcher.Errors:
 					if err != nil {
-						errs <- err
-						return
+						log.SetOutput(os.Stderr)
+						log.Println(err)
 					}
 				}
 			}
@@ -59,6 +59,7 @@ var waitCommand = &cobra.Command{
 					errs <- err
 				}
 				if verbose {
+					log.SetOutput(os.Stdout)
 					log.Println("watching", path)
 				}
 			}
@@ -76,6 +77,6 @@ var waitCommand = &cobra.Command{
 }
 
 func init() {
-	waitCommand.Flags().BoolVarP(&verbose, "verbose", "v", false, "log a list of watched files")
-	RootCommand.AddCommand(waitCommand)
+	watchCommand.Flags().BoolVarP(&verbose, "verbose", "v", false, "log a list of watched files")
+	RootCommand.AddCommand(watchCommand)
 }
