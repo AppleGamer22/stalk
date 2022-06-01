@@ -6,7 +6,7 @@ LDFLAGS:=-ldflags="-X '$(PACKAGE)/cmd.Version=$(subst v,,$(VERSION))' -X '$(PACK
 
 test:
 	go clean -testcache
-	go test -v -race -cover ./session ./ps ./cmd
+	go test -v -race -cover ./cmd
 
 debug:
 	go build -race $(LDFLAGS) .
