@@ -46,7 +46,7 @@ var watchCommand = &cobra.Command{
 		errs := make(chan error, 1)
 
 		arguments := strings.Split(command, " ")
-
+		var process *exec.Cmd
 		go func() {
 			for {
 				select {
@@ -58,7 +58,7 @@ var watchCommand = &cobra.Command{
 					log.SetOutput(os.Stdout)
 					log.Println(event)
 
-					var process *exec.Cmd
+					process.Process.Kill()
 					if len(arguments) == 1 {
 						process = exec.Command(command)
 					} else if len(arguments) > 1 {
