@@ -57,6 +57,7 @@ var waitCommand = &cobra.Command{
 			for _, path := range args {
 				if err := watcher.Add(path); err != nil {
 					errs <- err
+					return
 				}
 				if verbose {
 					log.Println("watching", path)
