@@ -31,9 +31,6 @@ var watchCommand = &cobra.Command{
 			return errors.New("at list 1 file must be specified")
 		}
 
-		if command == "" {
-			return errors.New("command must be valid")
-		}
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -106,5 +103,6 @@ var watchCommand = &cobra.Command{
 func init() {
 	watchCommand.Flags().BoolVarP(&verbose, "verbose", "v", false, "log a list of watched files")
 	watchCommand.Flags().StringVarP(&command, "command", "c", "", "command to run after each file change")
+	_ = waitCommand.MarkFlagRequired("command")
 	RootCommand.AddCommand(watchCommand)
 }
