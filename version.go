@@ -1,4 +1,4 @@
-package cmd
+package main
 
 import (
 	"fmt"
@@ -7,10 +7,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var Version = "development"
-var Hash = "development"
-
-var verbose bool
+var (
+	Version = "development"
+	Hash    = "development"
+	verbose bool
+)
 
 const (
 	githubReleaseURLPrefix = "https://github.com/AppleGamer22/stalk/releases/tag/v"

@@ -12,8 +12,8 @@ builds:
       - arm64
       - riscv64
     ldflags:
-      - -X 'github.com/AppleGamer22/stalk/cmd.Version={{ .Version }}'
-      - -X 'github.com/AppleGamer22/stalk/cmd.Hash={{ .FullCommit }}'
+      - -X 'main.Version={{ .Version }}'
+      - -X 'main.Hash={{ .FullCommit }}'
   - id: mac
     goos:
       - darwin

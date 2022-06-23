@@ -2,11 +2,11 @@ SHELL:=/bin/bash
 VERSION:=$(shell git describe --tags --abbrev=0)
 HASH:=$(shell git rev-list -1 HEAD)
 PACKAGE:=github.com/AppleGamer22/stalk
-LDFLAGS:=-ldflags="-X '$(PACKAGE)/cmd.Version=$(subst v,,$(VERSION))' -X '$(PACKAGE)/cmd.Hash=$(HASH)'"
+LDFLAGS:=-ldflags="-X 'main.Version=$(subst v,,$(VERSION))' -X 'main.Hash=$(HASH)'"
 
 test:
 	go clean -testcache
-	go test -v -race -cover ./cmd
+	go test -v -race -cover .
 
 debug:
 	go build -race $(LDFLAGS) .

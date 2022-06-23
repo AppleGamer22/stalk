@@ -3,11 +3,22 @@ package main
 import (
 	"os"
 
-	"github.com/AppleGamer22/stalk/cmd"
+	"github.com/spf13/cobra"
 )
 
+var RootCommand = &cobra.Command{
+	Use:     "stalk",
+	Short:   "watch/wait a file for change",
+	Long:    "watch/wait a file for change",
+	Version: Version,
+}
+
+func init() {
+	RootCommand.SetVersionTemplate("{{.Version}}\n")
+}
+
 func main() {
-	if err := cmd.RootCommand.Execute(); err != nil {
+	if err := RootCommand.Execute(); err != nil {
 		os.Exit(1)
 	}
 }
