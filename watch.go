@@ -52,7 +52,6 @@ var watchCommand = &cobra.Command{
 					if event.Name == "" {
 						continue
 					}
-					log.SetOutput(os.Stdout)
 					log.Println(event)
 
 					process.Process.Kill()
@@ -64,13 +63,11 @@ var watchCommand = &cobra.Command{
 
 					process.Stdout = os.Stdout
 					if err := process.Run(); err != nil {
-						log.SetOutput(os.Stderr)
 						log.Println(err)
 					}
 					return
 				case err := <-watcher.Errors:
 					if err != nil {
-						log.SetOutput(os.Stderr)
 						log.Println(err)
 					}
 				}
@@ -83,7 +80,6 @@ var watchCommand = &cobra.Command{
 					errs <- err
 				}
 				if verbose {
-					log.SetOutput(os.Stdout)
 					log.Println("watching", path)
 				}
 			}

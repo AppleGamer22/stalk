@@ -26,7 +26,6 @@ var waitCommand = &cobra.Command{
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		log.SetOutput(os.Stdout)
 		watcher, err := fsnotify.NewWatcher()
 		if err != nil {
 			return err
