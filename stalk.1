@@ -1,0 +1,64 @@
+.TH "STALK" "1" "DATE" "stalk vVERSION" "stalk Manual"
+.nh
+.ad l
+.SH NAME
+\fIstalk\fR \- a command\-line utility for file watching
+
+.SH SYNOPSIS
+\fIstalk\fR [options]
+.sp
+\fIstalk\fR version [options]
+.sp
+\fIstalk\fR watch  [file] [options]
+.sp
+\fIstalk\fR wait [file]
+
+.SH DESCRIPTION
+stalk is a command\-line utility for file watching that can be used
+either interctively or programitaically.
+
+Under the hood it uses:
+
+.IP \[bu] 2
+.B inotify
+in Linux
+.IP \[bu]
+.B kqueue
+in FreeBSD or macOS
+.IP \[bu]
+.B ReadDirectoryChangesW
+in Windows
+
+.SH WATCH OPTIONS
+.B \-c, \-\-command
+The command to be stopped and re-run after each file system event.
+
+.B \-v, \-\-verbose
+Enables more detailed logs to be printed regarding file system events.
+
+.SH VERSION OPTIONS
+.B \-v, \-\-verbose
+Displays \fIstalk\fR's version and git commit hash
+
+.SH EXAMPLES
+.TP
+\fIstalk wait main.tex\fR
+Wait until main.tex is modified.
+.TP
+\fIstalk wait *.tex\fR
+Wait until any TeX file is modified.
+.TP
+\fIstalk watch README.md template.tex -c "pandoc README.md -o README.pdf"\fR
+Watch for any modifications to README.md or template.tex and run pandoc after each change.
+
+
+.SH BUGS
+Please report bugs to our GitHub page https://github.com/AppleGamer22/stalk/issues
+
+.SH AUTHORS
+Omri Bornstein <omribor@gmail.com>
+
+.SH COPYRIGHT
+\fIstalk\fR is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3, or (at your option) any later version.
+
+\fIstalk\fR is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
