@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -33,6 +34,7 @@ var waitCommand = &cobra.Command{
 		defer watcher.Close()
 
 		errs := make(chan error, 1)
+		signals := make(chan os.Signal, 1)
 
 		go func() {
 			for {
@@ -42,6 +44,7 @@ var waitCommand = &cobra.Command{
 						continue
 					}
 					log.Println(event)
+					signals <- syscall.Signal(0)
 					return
 				case err := <-watcher.Errors:
 					if err != nil {
@@ -64,10 +67,10 @@ var waitCommand = &cobra.Command{
 			}
 		}()
 
-		signals := make(chan os.Signal, 1)
 		signal.Notify(signals, os.Interrupt, syscall.SIGINT, syscall.SIGQUIT)
 		select {
 		case <-signals:
+			fmt.Print("\r")
 			return nil
 		case err := <-errs:
 			return err

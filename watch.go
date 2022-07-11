@@ -2,12 +2,14 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"os"
 	"os/exec"
 	"os/signal"
 	"strings"
 	"syscall"
+	"time"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/cobra"
@@ -44,17 +46,24 @@ var watchCommand = &cobra.Command{
 
 		arguments := strings.Split(command, " ")
 		var process *exec.Cmd
+		lastEventTime := time.Unix(0, 0)
 		go func() {
 			for {
 				select {
 				case event := <-watcher.Events:
-
 					if event.Name == "" {
 						continue
+					} else if time.Since(lastEventTime) >= time.Second/10 {
+						lastEventTime = time.Now()
+						log.Println(event)
+					} else {
+						continue
 					}
-					log.Println(event)
 
-					process.Process.Kill()
+					if process != nil {
+						process.Process.Kill()
+					}
+
 					if len(arguments) == 1 {
 						process = exec.Command(command)
 					} else if len(arguments) > 1 {
@@ -63,9 +72,8 @@ var watchCommand = &cobra.Command{
 
 					process.Stdout = os.Stdout
 					if err := process.Run(); err != nil {
-						log.Println(err)
+						errs <- err
 					}
-					return
 				case err := <-watcher.Errors:
 					if err != nil {
 						log.Println(err)
@@ -89,6 +97,7 @@ var watchCommand = &cobra.Command{
 		signal.Notify(signals, os.Interrupt, syscall.SIGINT, syscall.SIGQUIT)
 		select {
 		case <-signals:
+			fmt.Print("\r")
 			return nil
 		case err := <-errs:
 			return err

@@ -1,5 +1,5 @@
 SHELL:=/bin/bash
-VERSION:=$(shell git describe --tags --abbrev=0)
+VERSION:=$(shell git describe --tags --abbrev=0 || echo 'main.Version')
 HASH:=$(shell git rev-list -1 HEAD)
 PACKAGE:=github.com/AppleGamer22/stalk
 LDFLAGS:=-ldflags="-X 'main.Version=$(subst v,,$(VERSION))' -X 'main.Hash=$(HASH)'"
