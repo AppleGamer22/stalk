@@ -21,8 +21,8 @@ builds:
       - amd64
       - arm64
     ldflags:
-      - -X 'github.com/AppleGamer22/stalk/cmd.Version={{ .Version }}'
-      - -X 'github.com/AppleGamer22/stalk/cmd.Hash={{ .FullCommit }}'
+      - -X 'main.Version={{ .Version }}'
+      - -X 'main.Hash={{ .FullCommit }}'
   - id: windows
     goos:
       - windows
@@ -30,8 +30,8 @@ builds:
       - amd64
       - arm64
     ldflags:
-      - -X 'github.com/AppleGamer22/stalk/cmd.Version={{ .Version }}'
-      - -X 'github.com/AppleGamer22/stalk/cmd.Hash={{ .FullCommit }}'
+      - -X 'main.Version={{ .Version }}'
+      - -X 'main.Hash={{ .FullCommit }}'
 archives:
   - id: unix
     builds:
