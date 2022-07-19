@@ -5,8 +5,6 @@
 `stalk` is a cross-platform CLI utility for file-watching.
 
 ## Why This Name?
-The program's functionality and name are inspired by [macOS's `caffeinate`](https://github.com/apple-oss-distributions/PowerManagement/blob/main/caffeinate) utility that prevents the system from entering sleep mode.
-
 This name is simply a stupid ~~pun~~, therefore **I do not condone and do not promote stalking** (excluding stalking fictional individuals for the purposes of a [CTF](https://en.wikipedia.org/wiki/Capture_the_flag_(cybersecurity)) challenge).
 
 ## Installation
@@ -31,6 +29,7 @@ brew install AppleGamer22/tap/stalk
 ```bash
 winget install AppleGamer22.stalk
 ```
+
 ### Other
 * `go`:
 	* Does not ship with:
