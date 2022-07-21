@@ -71,6 +71,8 @@ var watchCommand = &cobra.Command{
 					}
 
 					process.Stdout = os.Stdout
+					process.Stdin = os.Stdin
+					process.Stderr = os.Stderr
 					if err := process.Run(); err != nil {
 						errs <- err
 					}
