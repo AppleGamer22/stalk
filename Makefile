@@ -18,13 +18,8 @@ completion:
 	go run . completion powershell > stalk.ps1
 
 manual:
-	if [[ "$$OSTYPE" == "linux-gnu"* ]]; then \
-		sed -i "s/vVERSION/$(VERSION)/" stalk.1; \
-		sed -i "s/DATE/$(shell date -Idate)/" stalk.1; \
-	elif [[ "$$OSTYPE" == "darwin"* ]]; then \
-		sed -I '' "s/vVERSION/$(VERSION)/" stalk.1; \
-		sed -I '' "s/DATE/$(shell date -Idate)/" stalk.1; \
-	fi
+	go run ./utils/replace stalk.1 -b "vVERSION" -a "$(VERSION)"
+	go run ./utils/replace stalk.1 -b "DATE" -a "$(shell go run ./utils/date)"
 
 clean:
 	rm -rf stalk bin dist stalk.bash stalk.fish stalk.zsh stalk.ps1
