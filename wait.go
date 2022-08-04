@@ -40,7 +40,7 @@ var waitCommand = &cobra.Command{
 			for {
 				select {
 				case event := <-watcher.Events:
-					if event.Name == "" {
+					if event.Name == "" || (event.Op != fsnotify.Write && event.Op != fsnotify.Create) {
 						continue
 					}
 					log.Println(event)

@@ -9,7 +9,6 @@ import (
 	"os/signal"
 	"strings"
 	"syscall"
-	"time"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/cobra"
@@ -46,19 +45,19 @@ var watchCommand = &cobra.Command{
 
 		arguments := strings.Split(command, " ")
 		var process *exec.Cmd
-		lastEventTime := time.Unix(0, 0)
+		// lastEventTime := time.Unix(0, 0)
 		go func() {
 			for {
 				select {
 				case event := <-watcher.Events:
-					if event.Name == "" {
+					if event.Name == "" || (event.Op != fsnotify.Write && event.Op != fsnotify.Create) {
 						continue
-					} else if time.Since(lastEventTime) >= time.Second/10 {
+					} /* else if time.Since(lastEventTime) >= time.Second/10 {
 						lastEventTime = time.Now()
-						log.Println(event)
 					} else {
 						continue
-					}
+					}*/
+					log.Println(event)
 
 					if process != nil {
 						process.Process.Kill()
@@ -73,7 +72,7 @@ var watchCommand = &cobra.Command{
 					process.Stdout = os.Stdout
 					process.Stdin = os.Stdin
 					process.Stderr = os.Stderr
-					if err := process.Run(); err != nil {
+					if err := process.Start(); err != nil {
 						errs <- err
 					}
 				case err := <-watcher.Errors:
@@ -99,9 +98,11 @@ var watchCommand = &cobra.Command{
 		signal.Notify(signals, os.Interrupt, syscall.SIGINT, syscall.SIGQUIT)
 		select {
 		case <-signals:
+			process.Process.Kill()
 			fmt.Print("\r")
 			return nil
 		case err := <-errs:
+			process.Process.Kill()
 			return err
 		}
 	},
@@ -110,6 +111,6 @@ var watchCommand = &cobra.Command{
 func init() {
 	watchCommand.Flags().BoolVarP(&verbose, "verbose", "v", false, "log a list of watched files")
 	watchCommand.Flags().StringVarP(&command, "command", "c", "", "command to run after each file change")
-	_ = waitCommand.MarkFlagRequired("command")
+	watchCommand.MarkFlagRequired("command")
 	RootCommand.AddCommand(watchCommand)
 }
