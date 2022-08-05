@@ -8,7 +8,9 @@ import (
 	"os/exec"
 	"os/signal"
 	"strings"
+	"sync"
 	"syscall"
+	"time"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/cobra"
@@ -43,38 +45,42 @@ var watchCommand = &cobra.Command{
 
 		errs := make(chan error, 1)
 
-		arguments := strings.Split(command, " ")
+		fullCommand := strings.Split(command, " ")
+		command := fullCommand[0]
+		arguments := make([]string, 0, len(fullCommand)-1)
+		if len(fullCommand) > 1 {
+			arguments = append(arguments, fullCommand[1:]...)
+		}
+
 		var process *exec.Cmd
-		// lastEventTime := time.Unix(0, 0)
+		var processMutex sync.Mutex
+		lastEventTime := time.Unix(0, 0)
 		go func() {
 			for {
 				select {
 				case event := <-watcher.Events:
-					if event.Name == "" || (event.Op != fsnotify.Write && event.Op != fsnotify.Create) {
+					if event.Name == "" || (event.Op != fsnotify.Write && event.Op != fsnotify.Create) || time.Since(lastEventTime) <= time.Second/10 {
 						continue
-					} /* else if time.Since(lastEventTime) >= time.Second/10 {
-						lastEventTime = time.Now()
-					} else {
-						continue
-					}*/
+					}
+
+					processMutex.Lock()
+					lastEventTime = time.Now()
 					log.Println(event)
 
 					if process != nil {
 						process.Process.Kill()
 					}
 
-					if len(arguments) == 1 {
-						process = exec.Command(command)
-					} else if len(arguments) > 1 {
-						process = exec.Command(arguments[0], arguments[1:]...)
-					}
-
+					process = exec.Command(command, arguments...)
 					process.Stdout = os.Stdout
 					process.Stdin = os.Stdin
 					process.Stderr = os.Stderr
+
 					if err := process.Start(); err != nil {
 						errs <- err
+						return
 					}
+					processMutex.Unlock()
 				case err := <-watcher.Errors:
 					if err != nil {
 						log.Println(err)
@@ -98,11 +104,15 @@ var watchCommand = &cobra.Command{
 		signal.Notify(signals, os.Interrupt, syscall.SIGINT, syscall.SIGQUIT)
 		select {
 		case <-signals:
+			processMutex.Lock()
 			process.Process.Kill()
+			processMutex.Unlock()
 			fmt.Print("\r")
 			return nil
 		case err := <-errs:
+			processMutex.Lock()
 			process.Process.Kill()
+			processMutex.Unlock()
 			return err
 		}
 	},
