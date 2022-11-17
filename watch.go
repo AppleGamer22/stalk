@@ -5,10 +5,8 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"os/exec"
 	"os/signal"
 	"strings"
-	"sync"
 	"syscall"
 	"time"
 
@@ -52,8 +50,6 @@ var watchCommand = &cobra.Command{
 			arguments = append(arguments, fullCommand[1:]...)
 		}
 
-		var process *exec.Cmd
-		var processMutex sync.Mutex
 		lastEventTime := time.Unix(0, 0)
 		go func() {
 			for {
@@ -63,27 +59,17 @@ var watchCommand = &cobra.Command{
 						continue
 					}
 
-					processMutex.Lock()
 					lastEventTime = time.Now()
 					log.Println(event)
-
-					if process != nil {
-						process.Process.Kill()
-					}
-
-					process = exec.Command(command, arguments...)
-					process.Stdout = os.Stdout
-					process.Stdin = os.Stdin
-					process.Stderr = os.Stderr
-
-					if err := process.Start(); err != nil {
+					if err := start(command, arguments...); err != nil {
 						errs <- err
 						return
 					}
-					processMutex.Unlock()
 				case err := <-watcher.Errors:
 					if err != nil {
 						log.Println(err)
+					} else {
+						return
 					}
 				}
 			}
@@ -104,15 +90,12 @@ var watchCommand = &cobra.Command{
 		signal.Notify(signals, os.Interrupt, syscall.SIGINT, syscall.SIGQUIT)
 		select {
 		case <-signals:
-			processMutex.Lock()
-			process.Process.Kill()
-			processMutex.Unlock()
+			kill(true)
 			fmt.Print("\r")
 			return nil
 		case err := <-errs:
-			processMutex.Lock()
-			process.Process.Kill()
-			processMutex.Unlock()
+			kill(true)
+			errs <- nil
 			return err
 		}
 	},
