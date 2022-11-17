@@ -1,14 +1,11 @@
+//go:build unix
+
 package main
 
 import (
 	"os"
 	"os/exec"
-	"sync"
-)
-
-var (
-	process      *exec.Cmd
-	processMutex sync.Mutex
+	"syscall"
 )
 
 func start(command string, arguments ...string) error {
@@ -24,12 +21,9 @@ func start(command string, arguments ...string) error {
 	process.Stdout = os.Stdout
 	process.Stdin = os.Stdin
 	process.Stderr = os.Stderr
+	process.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 
-	if err := process.Start(); err != nil {
-		return err
-	}
-
-	return nil
+	return process.Start()
 }
 
 func kill(lock bool) error {
@@ -40,7 +34,8 @@ func kill(lock bool) error {
 	if process == nil {
 		return nil
 	}
-	if err := process.Process.Kill(); err != nil {
+	// https://medium.com/@felixge/killing-a-child-process-and-all-of-its-children-in-go-54079af94773
+	if err := syscall.Kill(-process.Process.Pid, syscall.SIGKILL); err != nil {
 		return err
 	}
 	_, err := process.Process.Wait()

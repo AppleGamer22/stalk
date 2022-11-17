@@ -4,11 +4,18 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 	"os/signal"
+	"sync"
 	"syscall"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/cobra"
+)
+
+var (
+	process      *exec.Cmd
+	processMutex sync.Mutex
 )
 
 var waitCommand = &cobra.Command{
