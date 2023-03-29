@@ -8,29 +8,17 @@ import (
 	"syscall"
 )
 
-func start(command string, arguments ...string) error {
-	processMutex.Lock()
-	defer processMutex.Unlock()
-	if process != nil {
-		if err := kill(false); err != nil {
-			return err
-		}
-	}
-
-	process = exec.Command(command, arguments...)
+func start(command string, arguments ...string) (*exec.Cmd, error) {
+	process := exec.Command(command, arguments...)
 	process.Stdout = os.Stdout
-	process.Stdin = os.Stdin
+	// process.Stdin = os.Stdin
 	process.Stderr = os.Stderr
 	process.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 
-	return process.Start()
+	return process, process.Start()
 }
 
-func kill(lock bool) error {
-	if lock {
-		processMutex.Lock()
-		defer processMutex.Unlock()
-	}
+func kill(process *exec.Cmd, lock bool) error {
 	if process == nil {
 		return nil
 	}

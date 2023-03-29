@@ -3,9 +3,11 @@ package main
 import (
 	"errors"
 	"fmt"
+	"sync"
 
 	// "log"
 	"os"
+	"os/exec"
 	"os/signal"
 	"strings"
 	"syscall"
@@ -16,7 +18,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var command string
+var (
+	command      string
+	processMutex sync.Mutex
+)
 
 var watchCommand = &cobra.Command{
 	Use:   "watch",
@@ -53,6 +58,7 @@ var watchCommand = &cobra.Command{
 		}
 
 		lastEventTime := time.Unix(0, 0)
+		var process *exec.Cmd
 		go func() {
 			for {
 				select {
@@ -63,7 +69,10 @@ var watchCommand = &cobra.Command{
 
 					lastEventTime = time.Now()
 					log.Info(event)
-					if err := start(command, arguments...); err != nil {
+					processMutex.Lock()
+					process, err = start(command, arguments...)
+					processMutex.Unlock()
+					if err != nil {
 						errs <- err
 						return
 					}
@@ -90,11 +99,15 @@ var watchCommand = &cobra.Command{
 		signal.Notify(signals, os.Interrupt, syscall.SIGINT, syscall.SIGQUIT)
 		select {
 		case <-signals:
-			kill(true)
+			processMutex.Lock()
+			kill(process, true)
+			processMutex.Unlock()
 			fmt.Print("\r")
 			return nil
 		case err := <-errs:
-			kill(true)
+			processMutex.Lock()
+			kill(process, true)
+			processMutex.Unlock()
 			log.Error(err)
 			return err
 		}

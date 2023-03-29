@@ -4,19 +4,12 @@ import (
 	"fmt"
 	// "log"
 	"os"
-	"os/exec"
 	"os/signal"
-	"sync"
 	"syscall"
 
 	"github.com/charmbracelet/log"
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/cobra"
-)
-
-var (
-	process      *exec.Cmd
-	processMutex sync.Mutex
 )
 
 var waitCommand = &cobra.Command{
@@ -81,6 +74,7 @@ var waitCommand = &cobra.Command{
 			fmt.Print("\r")
 			return nil
 		case err := <-errs:
+			log.Error(err)
 			return err
 		}
 	},
