@@ -3,13 +3,15 @@ package main
 import (
 	"errors"
 	"fmt"
-	"log"
+
+	// "log"
 	"os"
 	"os/signal"
 	"strings"
 	"syscall"
 	"time"
 
+	"github.com/charmbracelet/log"
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/cobra"
 )
@@ -60,16 +62,14 @@ var watchCommand = &cobra.Command{
 					}
 
 					lastEventTime = time.Now()
-					log.Println(event)
+					log.Info(event)
 					if err := start(command, arguments...); err != nil {
 						errs <- err
 						return
 					}
 				case err := <-watcher.Errors:
 					if err != nil {
-						log.Println(err)
-					} else {
-						return
+						log.Error(err)
 					}
 				}
 			}
@@ -81,7 +81,7 @@ var watchCommand = &cobra.Command{
 					errs <- err
 				}
 				if verbose {
-					log.Println("watching", path)
+					log.Info("watching", path)
 				}
 			}
 		}()
@@ -95,7 +95,7 @@ var watchCommand = &cobra.Command{
 			return nil
 		case err := <-errs:
 			kill(true)
-			errs <- nil
+			log.Error(err)
 			return err
 		}
 	},

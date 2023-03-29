@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
-	"log"
+	// "log"
 	"os"
 	"os/exec"
 	"os/signal"
 	"sync"
 	"syscall"
 
+	"github.com/charmbracelet/log"
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/cobra"
 )
@@ -50,7 +51,7 @@ var waitCommand = &cobra.Command{
 					if event.Name == "" || (event.Op != fsnotify.Write && event.Op != fsnotify.Create) {
 						continue
 					}
-					log.Println(event)
+					log.Info(event)
 					signals <- syscall.Signal(0)
 					return
 				case err := <-watcher.Errors:
@@ -69,7 +70,7 @@ var waitCommand = &cobra.Command{
 					return
 				}
 				if verbose {
-					log.Println("watching", path)
+					log.Info("watching", path)
 				}
 			}
 		}()

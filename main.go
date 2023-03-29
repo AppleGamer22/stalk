@@ -7,10 +7,12 @@ import (
 )
 
 var RootCommand = &cobra.Command{
-	Use:     "stalk",
-	Short:   "watch/wait a file for change",
-	Long:    "watch/wait a file for change",
-	Version: Version,
+	Use:           "stalk",
+	Short:         "watch/wait a file for change",
+	Long:          "watch/wait a file for change",
+	SilenceUsage:  true,
+	SilenceErrors: true,
+	Version:       Version,
 }
 
 func init() {
