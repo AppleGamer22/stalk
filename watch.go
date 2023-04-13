@@ -70,6 +70,9 @@ var watchCommand = &cobra.Command{
 					lastEventTime = time.Now()
 					log.Info(event)
 					processMutex.Lock()
+					if err := kill(process); err != nil {
+						log.Error(err)
+					}
 					process, err = start(command, arguments...)
 					processMutex.Unlock()
 					if err != nil {
@@ -100,13 +103,17 @@ var watchCommand = &cobra.Command{
 		select {
 		case <-signals:
 			processMutex.Lock()
-			kill(process, true)
+			if err := kill(process); err != nil {
+				log.Error(err)
+			}
 			processMutex.Unlock()
 			fmt.Print("\r")
 			return nil
 		case err := <-errs:
 			processMutex.Lock()
-			kill(process, true)
+			if err := kill(process); err != nil {
+				log.Error(err)
+			}
 			processMutex.Unlock()
 			log.Error(err)
 			return err

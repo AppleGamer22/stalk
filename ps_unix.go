@@ -18,14 +18,15 @@ func start(command string, arguments ...string) (*exec.Cmd, error) {
 	return process, process.Start()
 }
 
-func kill(process *exec.Cmd, lock bool) error {
+func kill(process *exec.Cmd) error {
 	if process == nil {
 		return nil
 	}
-	// https://medium.com/@felixge/killing-a-child-process-and-all-of-its-children-in-go-54079af94773
+
 	if err := syscall.Kill(-process.Process.Pid, syscall.SIGKILL); err != nil {
 		return err
 	}
+
 	_, err := process.Process.Wait()
 	return err
 }
