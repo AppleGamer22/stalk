@@ -19,7 +19,7 @@ jobs:
     runs-on: ${{matrix.os}}
     steps:
       - name: Pull Source Code
-        uses: actions/checkout@v3.5.0
+        uses: actions/checkout@v3.5.2
       - name: Set-up Go
         uses: actions/setup-go@v4.0.0
         with:
