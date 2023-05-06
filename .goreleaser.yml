@@ -23,15 +23,15 @@ builds:
     ldflags:
       - -X 'main.Version={{.Version}}'
       - -X 'main.Hash={{.FullCommit}}'
-  - id: windows
-    goos:
-      - windows
-    goarch:
-      - amd64
-      - arm64
-    ldflags:
-      - -X 'main.Version={{.Version}}'
-      - -X 'main.Hash={{.FullCommit}}'
+  # - id: windows
+  #   goos:
+  #     - windows
+  #   goarch:
+  #     - amd64
+  #     - arm64
+  #   ldflags:
+  #     - -X 'main.Version={{.Version}}'
+  #     - -X 'main.Hash={{.FullCommit}}'
 archives:
   - id: unix
     builds:
@@ -49,16 +49,16 @@ archives:
       - stalk.fish
       - stalk.zsh
       - stalk.1
-  - id: windows
-    builds:
-      - windows
-    format_overrides:
-      - goos: windows
-        format: zip
-    name_template: "{{.ProjectName}}_{{.Version}}_{{.Os}}_{{.Arch}}"
-    files:
-      - stalk.ps1
-      - stalk.1
+  # - id: windows
+  #   builds:
+  #     - windows
+  #   format_overrides:
+  #     - goos: windows
+  #       format: zip
+  #   name_template: "{{.ProjectName}}_{{.Version}}_{{.Os}}_{{.Arch}}"
+  #   files:
+  #     - stalk.ps1
+  #     - stalk.1
 nfpms:
   - package_name: stalk
     vendor: AppleGamer22
