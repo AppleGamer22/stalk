@@ -3,7 +3,7 @@ module github.com/AppleGamer22/stalk
 go 1.18
 
 require (
-	github.com/charmbracelet/log v0.2.1
+	github.com/charmbracelet/log v0.2.3
 	github.com/fsnotify/fsnotify v1.6.0
 	github.com/spf13/cobra v1.7.0
 	golang.org/x/sys v0.10.0
@@ -18,7 +18,7 @@ require (
 	github.com/mattn/go-isatty v0.0.18 // indirect
 	github.com/mattn/go-runewidth v0.0.14 // indirect
 	github.com/muesli/reflow v0.3.0 // indirect
-	github.com/muesli/termenv v0.15.1 // indirect
+	github.com/muesli/termenv v0.15.2 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 )
