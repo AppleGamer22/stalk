@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/charmbracelet/log v0.2.5
-	github.com/fsnotify/fsnotify v1.6.0
+	github.com/fsnotify/fsnotify v1.7.0
 	github.com/spf13/cobra v1.7.0
 	golang.org/x/sys v0.13.0
 )
