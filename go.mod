@@ -6,7 +6,7 @@ require (
 	github.com/charmbracelet/log v0.3.0
 	github.com/fsnotify/fsnotify v1.7.0
 	github.com/spf13/cobra v1.8.0
-	golang.org/x/sys v0.14.0
+	golang.org/x/sys v0.15.0
 )
 
 require (
