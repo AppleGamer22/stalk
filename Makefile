@@ -1,4 +1,3 @@
-SHELL:=/bin/bash
 VERSION:=$(shell git describe --tags --abbrev=0 || echo 'main.Version')
 HASH:=$(shell git rev-list -1 HEAD)
 PACKAGE:=github.com/AppleGamer22/stalk
