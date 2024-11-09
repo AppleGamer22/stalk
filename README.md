@@ -8,6 +8,41 @@
 This name is simply a stupid ~~pun~~, therefore **I do not condone and do not promote stalking** (excluding stalking fictional individuals for the purposes of a [CTF](https://en.wikipedia.org/wiki/Capture_the_flag_(cybersecurity)) challenge).
 
 ## Installation
+### Nix Flakes
+```nix
+{
+  inputs = {
+    # or your preferred NixOS channel
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    applegamer22.url = "github:AppleGamer22/nur";
+  };
+  outputs = { nixpkgs }: {
+    nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
+      specialArgs = {
+        pkgs = import nixpkgs {
+          # ...
+          overlays = [
+            (final: prev: {
+              # ...
+              ag22 = applegamer22.packages."<your_system>";
+            })
+          ];
+        };
+      };
+      modules = [
+        # or in a separate Nix file
+        ({ pkgs, ... }: {
+          programs.nix-ld.enable = true;
+          environment.systemPackages = with pkgs; [
+            ag22.stalk
+          ];
+        })
+        # ...
+      ];
+    };
+  };
+}
+```
 ### Arch Linux Distributions
 * [`yay`](https://github.com/Jguer/yay):
 ```bash

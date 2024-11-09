@@ -1,4 +1,5 @@
 # yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+version: 2
 project_name: stalk
 before:
   hooks:
@@ -45,10 +46,10 @@ archives:
       {{- end}}_
       {{- .Arch}}
     files:
-      - stalk.bash
-      - stalk.fish
-      - stalk.zsh
-      - stalk.1
+      - "{{.ProjectName}}.bash"
+      - "{{.ProjectName}}.fish"
+      - "{{.ProjectName}}.zsh"
+      - "{{.ProjectName}}.1"
   # - id: windows
   #   builds:
   #     - windows
@@ -57,13 +58,12 @@ archives:
   #       format: zip
   #   name_template: "{{.ProjectName}}_{{.Version}}_{{.Os}}_{{.Arch}}"
   #   files:
-  #     - stalk.ps1
-  #     - stalk.1
+  #     - "{{.ProjectName}}.ps1"
+  #     - "{{.ProjectName}}.1"
 nfpms:
-  - package_name: stalk
-    vendor: AppleGamer22
+  - vendor: AppleGamer22
     maintainer: Omri Bornstein <omribor@gmail.com>
-    homepage: https://github.com/AppleGamer22/stalk
+    homepage: https://github.com/AppleGamer22/{{.ProjectName}}
     license: GPL-3.0
     description: Cross-platform file watcher.
     file_name_template: "{{.ProjectName}}_{{.Version}}_{{.Os}}_{{.Arch}}"
@@ -77,14 +77,14 @@ nfpms:
       - rpm
       - archlinux
     contents:
-      - src: stalk.1
-        dst: /usr/share/man/man1/stalk.1
-      - src: stalk.bash
-        dst: /usr/share/bash-completion/completions/stalk
-      - src: stalk.fish
-        dst: /usr/share/fish/completions/stalk.fish
-      - src: stalk.zsh
-        dst: /usr/share/zsh/site-functions/_stalk
+      - src: "{{.ProjectName}}.1"
+        dst: /usr/share/man/man1/{{.ProjectName}}.1
+      - src: "{{.ProjectName}}.bash"
+        dst: /usr/share/bash-completion/completions/{{.ProjectName}}
+      - src: "{{.ProjectName}}.fish"
+        dst: /usr/share/fish/completions/{{.ProjectName}}.fish
+      - src: "{{.ProjectName}}.zsh"
+        dst: /usr/share/zsh/site-functions/_{{.ProjectName}}
 changelog:
   use: github
   filters:
@@ -109,28 +109,81 @@ changelog:
 release:
   github:
     owner: AppleGamer22
-    name: stalk
+    name: "{{.ProjectName}}"
   discussion_category_name: General
   footer: |
     ## Installation
+    ### Nix Flakes
+    ```nix
+    {
+      inputs = {
+        # or your preferred NixOS channel
+        nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+        applegamer22.url = "github:AppleGamer22/nur";
+      };
+      outputs = { nixpkgs }: {
+        nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
+          specialArgs = {
+            pkgs = import nixpkgs {
+              # ...
+              overlays = [
+                (final: prev: {
+                  # ...
+                  ag22 = applegamer22.packages."<your_system>";
+                })
+              ];
+            };
+          };
+          modules = [
+            # or in a separate Nix file
+            ({ pkgs, ... }: {
+              programs.nix-ld.enable = true;
+              environment.systemPackages = with pkgs; [
+                ag22.{{.ProjectName}}
+              ];
+            })
+            # ...
+          ];
+        };
+      };
+    }
+    ```
     ### Arch Linux Distributions
     * [`yay`](https://github.com/Jguer/yay):
     ```bash
-    yay -S stalk-bin
+    yay -S {{.ProjectName}}-bin
     ```
     * [`paru`](https://github.com/morganamilo/paru):
     ```bash
-    paru -S stalk-bin
+    paru -S {{.ProjectName}}-bin
     ```
 
     ### macOS
-    * [Homebrew Tap](https://github.com/AppleGamer22/homebrew-stalk):
+    * [Homebrew Tap](https://github.com/AppleGamer22/homebrew-tap):
     ```bash
-    brew install AppleGamer22/tap/stalk
+    brew install AppleGamer22/tap/{{.ProjectName}}
     ```
   prerelease: auto
+nix:
+  - repository:
+      owner: AppleGamer22
+      name: nur
+      token: "{{.Env.TAP_GITHUB_TOKEN}}"
+    commit_author:
+      name: Omri Bornstein
+      email: omribor@gmail.com
+    homepage: https://github.com/AppleGamer22/{{.ProjectName}}
+    description: Cross-platform file watcher.
+    license: gpl3Only
+    ids:
+      - unix
+    install: |
+      mkdir -p $out/bin
+      cp -vr ./{{.ProjectName}} $out/bin/{{.ProjectName}}
+      installManPage ./{{.ProjectName}}.1
+      installShellCompletion ./{{.ProjectName}}.*sh
 aurs:
-  - homepage: https://github.com/AppleGamer22/stalk
+  - homepage: https://github.com/AppleGamer22/{{.ProjectName}}
     description: Cross-platform file watcher.
     license: GPL3
     maintainers:
@@ -138,7 +191,7 @@ aurs:
     contributors:
       - Omri Bornstein <omribor@gmail.com>
     private_key: "{{.Env.AUR_SSH_PRIVATE_KEY}}"
-    git_url: ssh://aur@aur.archlinux.org/stalk-bin.git
+    git_url: ssh://aur@aur.archlinux.org/{{.ProjectName}}-bin.git
     depends:
       - inotify-tools
     optdepends:
@@ -146,16 +199,16 @@ aurs:
       - fish
       - zsh
     package: |
-      install -Dm755 stalk "${pkgdir}/usr/bin/stalk"
-      install -Dm644 stalk.1 "${pkgdir}/usr/share/man/man1/stalk.1"
-      install -Dm644 stalk.bash "${pkgdir}/usr/share/bash-completion/completions/stalk"
-      install -Dm644 stalk.fish "${pkgdir}/usr/share/fish/vendor_completions.d/stalk.fish"
-      install -Dm644 stalk.zsh "${pkgdir}/usr/share/zsh/site-functions/_stalk"
+      install -Dm755 {{.ProjectName}} "${pkgdir}/usr/bin/{{.ProjectName}}"
+      install -Dm644 {{.ProjectName}}.1 "${pkgdir}/usr/share/man/man1/{{.ProjectName}}.1"
+      install -Dm644 {{.ProjectName}}.bash "${pkgdir}/usr/share/bash-completion/completions/{{.ProjectName}}"
+      install -Dm644 {{.ProjectName}}.fish "${pkgdir}/usr/share/fish/vendor_completions.d/{{.ProjectName}}.fish"
+      install -Dm644 {{.ProjectName}}.zsh "${pkgdir}/usr/share/zsh/site-functions/_{{.ProjectName}}"
     commit_author:
       name: Omri Bornstein
       email: omribor@gmail.com
 brews:
-  - tap:
+  - repository:
       owner: AppleGamer22
       name: homebrew-tap
       token: "{{.Env.TAP_GITHUB_TOKEN}}"
@@ -163,14 +216,14 @@ brews:
     commit_author:
       name: Omri Bornstein
       email: omribor@gmail.com
-    homepage: https://github.com/AppleGamer22/stalk
+    homepage: https://github.com/AppleGamer22/{{.ProjectName}}
     description: Cross-platform file watcher.
     license: GPL-3.0
     install: |
-      bin.install "stalk"
-      man1.install "stalk.1"
-      bash_completion.install "stalk.bash" => "stalk"
-      fish_completion.install "stalk.fish"
-      zsh_completion.install "stalk.zsh" => "_stalk"
+      bin.install "{{.ProjectName}}"
+      man1.install "{{.ProjectName}}.1"
+      bash_completion.install "{{.ProjectName}}.bash" => "{{.ProjectName}}"
+      fish_completion.install "{{.ProjectName}}.fish"
+      zsh_completion.install "{{.ProjectName}}.zsh" => "_{{.ProjectName}}"
 sboms:
   - artifacts: archive
