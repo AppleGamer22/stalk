@@ -1,6 +1,8 @@
 module github.com/AppleGamer22/stalk
 
-go 1.18
+go 1.23.0
+
+toolchain go1.24.1
 
 require (
 	github.com/charmbracelet/log v0.4.1
