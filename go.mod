@@ -8,7 +8,7 @@ require (
 	github.com/charmbracelet/log v0.4.2
 	github.com/fsnotify/fsnotify v1.9.0
 	github.com/spf13/cobra v1.10.1
-	golang.org/x/sys v0.36.0
+	golang.org/x/sys v0.37.0
 )
 
 require (
