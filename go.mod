@@ -7,7 +7,7 @@ toolchain go1.24.1
 require (
 	github.com/charmbracelet/log v0.4.2
 	github.com/fsnotify/fsnotify v1.9.0
-	github.com/spf13/cobra v1.10.1
+	github.com/spf13/cobra v1.10.2
 	golang.org/x/sys v0.38.0
 )
 
